@@ -41,6 +41,35 @@ describe('indentation', function() {
 
 });
 
+describe('optimize', function() {
+    it('should allow calling optimize with only one argument', function(done) {
+
+        var filepath = PATH.resolve(__dirname, './test.svg'),
+            svgo;
+
+        FS.readFile(filepath, 'utf8', function(err, data) {
+            if (err) {
+                throw err;
+            }
+
+            var splitted = normalize(data).split(/\s*@@@\s*/),
+                orig     = splitted[0],
+                should   = splitted[1];
+
+            svgo = new SVGO();
+
+            svgo.optimize(orig).then(function(result) {
+                normalize(result.data).should.be.equal(should);
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+
+        });
+
+    });
+});
+
 function normalize(file) {
     return file.trim().replace(regEOL, '\n');
 }
